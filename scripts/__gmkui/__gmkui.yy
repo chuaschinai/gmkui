@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__gmkui",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__gmkui",
+  "parent":{
+    "name":"gmkui",
+    "path":"folders/gmkui.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/bscotch/stitch/refs/heads/develop/packages/sprite-source/schemas/stitch.sprite-cache.schema.json",
+  "version": 2,
+  "info": {
+    "spr_cube": {
+      "spine": false,
+      "checksum": "2d8af37faf65911dab8367d1f57d688e",
+      "frames": {
+        "ced846ca-fb2a-4a99-abc1-0ef2e95cddcb.png": {
+          "width": 64,
+          "height": 64,
+          "checksum": "fd2bcfccd00",
+          "changed": 1772759224014
+        }
+      }
+    }
+  }
+}
