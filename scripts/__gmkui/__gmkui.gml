@@ -123,7 +123,7 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 		wind.h = max(wind.h, gmkui_style.title_height + gmkui_style.window_padding[1] * 3);
 	}
 	
-	wind.viewport_w = wind.w - gmkui_style.window_padding[0] * 4;
+	wind.viewport_w = wind.w - gmkui_style.window_padding[0] * 2;
 	wind.viewport_h = wind.h - (gmkui_style.window_padding[1] * 2 + title_height_offset);
 	var overflow_height = wind.content_height - wind.viewport_h;
 	var scrollbar_thumb_height = max(wind.viewport_h - overflow_height, 16);
@@ -178,34 +178,24 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 	wind.scrollbar_y = clamp(wind.scrollbar_y, 0, wind.viewport_h - scrollbar_thumb_height);
 	
 	// reset cursor
-	wind.cursor_start_x = wind.x + gmkui_style.window_padding[0] * 2;
+	wind.cursor_start_x = wind.x + gmkui_style.window_padding[0];
 	wind.cursor_start_y = wind.y + title_height_offset + gmkui_style.window_padding[1] + wind.offset_y;
 	wind.cursor_x = wind.cursor_start_x;
 	wind.cursor_y = wind.cursor_start_y;
 	
 	// draw content area
 	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.background);
-	// border window
-	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.border, 1, true);
-	
-	__gmkui_push_draw_rect(
-		wind.x + gmkui_style.window_padding[0], 
-		wind.y + viewport_y,
-		wind.w - (gmkui_style.window_padding[0] * 2 + right_padding),
-		wind.h - gmkui_style.window_padding[1] - gmkui_style.window_padding[1] - title_height_offset,
-		gmkui_style.col.border, 1, true
-	);
 
 	// titlebar
 	if (!(flags & gmkui_window_flags.no_title))
 	{
-		__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.titlebar, {
-			text: title,
-			x: wind.x + gmkui_style.window_padding[0], y: wind.y + gmkui_style.window_padding[1],
-			w: wind.w - 1 - gmkui_style.window_padding[0] * 2, h: gmkui_style.title_height  - gmkui_style.window_padding[1], is_focused: gmkui.window_focus_id == wind.id });
+		__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.titlebar, { text: title, x: wind.x, y: wind.y, w: wind.w, h: gmkui_style.title_height, is_focused: gmkui.window_focus_id == wind.id });
 		__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.button, { x: close_x, y: button_title_y, text: "X", w: button_title_h, h: button_title_h, hovered: false, active: false, disabled: false });
 		__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.button, { x: collapse_x, y: button_title_y, text: "_", w: button_title_h, h: button_title_h, hovered: false, active: false, disabled: false });
 	}
+
+	// border window
+	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.border, 1, true);
 
 	// resize
 	__gmkui_push_draw_rect(wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, c_aqua, resize.hovered || resize.held);
@@ -214,12 +204,12 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 	__gmkui_push_draw_rect(wind.x + wind.w - right_padding - gmkui_style.window_padding[0] * 0.5, wind.y + title_height_offset + gmkui_style.window_padding[1], right_padding, wind.viewport_h, c_dkgray);
 	// scrollbar thumb
 	__gmkui_push_draw_rect(wind.x + wind.w - right_padding - gmkui_style.window_padding[0] * 0.5, content_start_y, right_padding, scrollbar_thumb_height, gmkui_style.col.bg_title, 1, false);
-	
+
 	__gmkui_pushclip(
 		wind.x + gmkui_style.window_padding[0],
 		wind.y + viewport_y,
 		wind.w - (gmkui_style.window_padding[0] * 2 + right_padding + 1),
-		wind.h - gmkui_style.window_padding[1] * 2 - (title_height_offset + 1)
+		wind.viewport_h
 	);
 	
 	return true;	
