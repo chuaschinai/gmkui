@@ -1,5 +1,7 @@
 /// GameMakerUI v1.0.0 - by chuas
 
+#macro GMKUI_INTERACT_MAX_DEPTH 65535
+
 /// @param {Bool} x
 /// @param {String} str
 function gmkui_assert(x, str) { if (!x) { show_error(str, true); } }

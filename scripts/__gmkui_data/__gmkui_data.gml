@@ -13,6 +13,7 @@ function __gmkui() constructor
 	self.my = 0;
 	self.window_hover_id = 0;
 	self.window_focus_id = 0;
+	self.next_window_id = 0;
 	self.count_draw_calls = 0;
 	self.previous_hover_id = 0;
 	self.hover_id = 0;

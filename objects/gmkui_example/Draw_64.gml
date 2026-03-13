@@ -6,7 +6,8 @@ if (gmkui_window_resized())
 	exit;
 }
 
-var title = string("Window [FPS: ({0}) {1}]##window_example", fps, fps_real);
+gmkui_next_window_id("window_example");
+var title = string("Window [FPS: ({0}) {1}]", fps, fps_real);
 if (gmkui_begin(title, window_example_ref, 360, 32, 480, 640))
 {
 	var wind = gmkui_current_window();
