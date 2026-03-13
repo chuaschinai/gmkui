@@ -163,9 +163,12 @@ function __gmkui_draw_titlebar(title, x, y, width, height, is_focus)
 
 	draw_rectangle_colour(x, y, x + width, y + height, col, col, col, col, false);
 
+	var temp = gpu_get_scissor();
+	gpu_set_scissor(x, y, width, height);
 	draw_set_valign(fa_middle);
 	draw_text(x + gmkui_style.window_padding[0], y + height * 0.5, title);
 	draw_set_valign(fa_top);
+	gpu_set_scissor(temp);
 }
 
 function __gmkui_draw_checkbox(label, checked, x, y, height, color)
