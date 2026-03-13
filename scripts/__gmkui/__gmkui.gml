@@ -128,7 +128,6 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 	var overflow_height = wind.content_height - wind.viewport_h;
 	var scrollbar_thumb_height = max(wind.viewport_h - overflow_height, 16);
 	
-	var viewport_y = title_height_offset + gmkui_style.window_padding[1]; // start y viewport clipped area
 	// scrollbar
 	var right_padding = 0;
 	var content_start_y = wind.y + title_height_offset + gmkui_style.window_padding[1] + wind.scrollbar_y;
@@ -136,9 +135,7 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 	if (!wind.hidden)
 	{
 		// content
-		var content_w = wind.w - gmkui_style.window_padding[0] * 2;
-		var content_h = wind.h - gmkui_style.window_padding[1] * 2 - title_height_offset;
-		var content = gmkui_interact("#CONTENT", wind.x + gmkui_style.window_padding[0], wind.y + viewport_y, content_w, content_h, -1, gmkui_interact_flags.hover | gmkui_interact_flags.pressed | gmkui_interact_flags.wheel);
+		var content = gmkui_interact("#CONTENT", wind.x, wind.y + title_height_offset, wind.w, wind.h - title_height_offset, -1, gmkui_interact_flags.hover | gmkui_interact_flags.pressed | gmkui_interact_flags.wheel);
 		if (content && content.wheel != 0 && overflow_height > 0)
 		{
 			wind.offset_y += content.wheel * 16;
@@ -207,7 +204,7 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 
 	__gmkui_pushclip(
 		wind.x + gmkui_style.window_padding[0],
-		wind.y + viewport_y,
+		wind.y + title_height_offset,
 		wind.w - (gmkui_style.window_padding[0] * 2 + right_padding + 1),
 		wind.viewport_h
 	);
