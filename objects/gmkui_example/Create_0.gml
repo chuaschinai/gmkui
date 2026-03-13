@@ -14,6 +14,9 @@ layer_background_blend(layer_bg, make_colour_rgb(bg_red_ref.get(), bg_green_ref.
 radio = 0;
 radio_ref = gmkui_ref(self, "radio");
 
+collapse_buttons_ref = gmkui_ref(self, "collapse_buttons");
+button_names = ["Lorem", "Ipsum", "Dolor", "Sit", "Amet", "Consectetur", "Adipiscing", "Elit", "Sed", "Do"];
+
 view_enabled = true;
 view_visible[0] = true;
 view_camera[0] = camera_create();

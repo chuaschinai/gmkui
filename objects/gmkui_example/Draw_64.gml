@@ -56,6 +56,25 @@ if (gmkui_begin(title, window_example_ref, 360, 32, 480, 640))
 		gmkui_slider("Blue", bg_blue_ref, 0, 255, gmkui_slider_flags.integer);
 		layer_background_blend(layer_bg, make_colour_rgb(bg_red_ref.get(), bg_green_ref.get(), bg_blue_ref.get()));
 	}
+
+	if (gmkui_collapse("Buttons", collapse_buttons_ref)) {
+		for (var i = 0; i < 40; ++i)
+		{
+			var name = button_names[i % array_length(button_names)];
+
+			// calc button width
+			var str_w = string_width(name);
+			var width = str_w + gmkui_style.button_padding[0] * 2;
+
+			if (i > 0 && wind.cursor_x + wind.line_width - wind.x - gmkui_style.window_padding[0] * 2 + width < wind.viewport_w)
+				gmkui_sameline();
+
+			gmkui_pushid(string(i));
+			if (gmkui_button(name))
+				gmkui_print("{0}", name);
+			gmkui_popid();
+		}
+	}
 	
 	gmkui_end();
 }

@@ -229,6 +229,8 @@ function gmkui_end()
 {
 	var wind = gmkui_current_window();
 
+	gmkui_assert(ds_stack_size(wind.stack_id) <= 1, "gmkui_popid() missing somewhere!");
+
 	wind.line_width = 0;
 	wind.line_height = 0;
 	wind.content_height = wind.cursor_y - (wind.y + wind.offset_y + gmkui_style.window_padding[1]);
@@ -587,9 +589,24 @@ function gmkui_current_window()
 /// @desc Just return a hash id and don't push to stack
 function gmkui_getid(str)
 {
+	var wind = gmkui_current_window();
 	var base = 0;
-	if (ds_stack_size(gmkui.windows_stack) > 0) { base = ds_stack_top(gmkui.windows_stack); }
+	if (ds_stack_size(wind.stack_id) > 0) { base = ds_stack_top(wind.stack_id); }
 	return __gmkui_hash(str, base);
+}
+
+/// @param {String} str
+function gmkui_pushid(str)
+{
+	var wind = gmkui_current_window();
+	ds_stack_push(wind.stack_id, gmkui_getid(str));
+}
+
+function gmkui_popid()
+{
+	var wind = gmkui_current_window();
+	gmkui_assert(ds_stack_size(wind.stack_id) > 1, "Calling PopID() too many times!");
+	ds_stack_pop(wind.stack_id);
 }
 
 /// @desc Creates a reference for widgets

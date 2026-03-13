@@ -88,11 +88,14 @@ function __gmkui_window(id, name, x, y) constructor
 	self.offset_y = 0;
 	self.scrollbar_y = 0;
 	self.content_height = 0; // total content size widgets and gaps
+	self.stack_id = ds_stack_create();
 	
 	static depth_count = -1; // increment for gmkui_interact(...)
 	static depth_hovered = -1; // store current interact depth
 	
 	self.draw_calls = ds_queue_create();
+
+	ds_stack_push(self.stack_id, id);
 }
 
 /// @param {Id.Instance|Struct|Undefined} src
