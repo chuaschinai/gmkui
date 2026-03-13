@@ -4,7 +4,7 @@
 /// @param {String} str
 function gmkui_assert(x, str) { if (!x) { show_error(str, true); } }
 
-/// @param {String} str
+/// @param {String|Any} str
 /// @param {Any} [arg0]
 /// @param {Any} [arg1]
 /// @param {Any} [arg2]
@@ -14,6 +14,8 @@ function gmkui_print(str)
 {
 	var args = [];
 	for (var i = 1; i < argument_count; ++i) { array_push(args, string(argument[i])); }
+	if (argument_count == 1)
+		str = string(str);
 	var date = date_time_string(date_current_datetime());
 	str = string_ext("[" + date + "] (gmkui) : " + str, args);
 	show_debug_message(str);
