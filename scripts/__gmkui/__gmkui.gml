@@ -270,21 +270,21 @@ function gmkui_draw()
 function gmkui_text(text)
 {	
 	var wind = gmkui_current_window();
-	
-	var str_w = string_width(text);
-	var str_h = string_height(text);
-	
-	if (!__gmkui_newline(wind, str_w + gmkui_style.gap[0], str_h)) { return; }
-	
-	var x0 = wind.cursor_x;
-	var y0 = wind.cursor_y;
-	
+
 	if (argument_count > 1)
 	{
 		var args = [];
 		for (var i = 1; i < argument_count; ++i) { array_push(args, string(argument[i])); }
 		text = string_ext(text, args);
 	}
+
+	var str_w = string_width(text);
+	var str_h = string_height(text);
+	
+	if (!__gmkui_newline(wind, str_w + gmkui_style.gap[0], str_h)) { return; }
+
+	var x0 = wind.cursor_x;
+	var y0 = wind.cursor_y;
 
 	__gmkui_push_draw_text(floor(x0), floor(y0), text, gmkui_style.col.text);
 }
