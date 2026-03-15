@@ -35,6 +35,7 @@ function __gmkui_dark() constructor
 	self.window_padding = [4, 4];
 	self.button_padding = [4, 2];
 	self.title_height = 24;
+	self.scrollbar_size = 10;
 	
 	self.col = {
 		background: #282828,

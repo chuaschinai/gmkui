@@ -55,8 +55,22 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 		}
 	}
 
-	// draw content area
+	// resize
+	var resize = gmkui_interact("#RESIZE", wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, GMKUI_INTERACT_MAX_DEPTH, gmkui_interact_flags.All | gmkui_interact_flags.out_of_window);
+	if (resize) {
+		if (resize.held)
+		{
+			wind.w = (gmkui.mx - gmkui.drag_offset_x) - wind.x + gmkui_style.window_padding[0];
+			wind.h = (gmkui.my - gmkui.drag_offset_y) - wind.y + gmkui_style.window_padding[1];
+			wind.w = max(wind.w, 64);
+			wind.h = max(wind.h, gmkui_style.title_height + gmkui_style.window_padding[1] * 2);
+		}
+	}
+
+	// background
 	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.background);
+	// resize
+	__gmkui_push_draw_rect(wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, c_aqua, resize.hovered || resize.held);
 
 	var title_height_offset = 0;
 	if (!(flags & gmkui_window_flags.no_title)) {
@@ -95,7 +109,10 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 		{
 			if (collapse.pressed)
 			{
-				if (!wind.hidden) { wind.last_height = wind.h; }
+				if (!wind.hidden) {
+					wind.last_height = wind.h;
+					wind.h = gmkui_style.title_height;
+				}
 				else { wind.h = wind.last_height; }
 				wind.hidden = !wind.hidden;
 			}
@@ -104,93 +121,69 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 		}
 	}
 
-	// border
-	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.border, 1, true);
-
-	// resize
-	var resize = gmkui_interact("#RESIZE", wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, GMKUI_INTERACT_MAX_DEPTH, gmkui_interact_flags.All | gmkui_interact_flags.out_of_window);
-	if (resize) {
-		if (resize.held)
-		{
-			wind.w = (gmkui.mx - gmkui.drag_offset_x) - wind.x + gmkui_style.window_padding[0];
-			wind.h = (gmkui.my - gmkui.drag_offset_y) - wind.y + gmkui_style.window_padding[1];
-			wind.w = max(wind.w, 64);
-			wind.h = max(wind.h, gmkui_style.title_height + gmkui_style.window_padding[1] * 3);
-		}
-
-		__gmkui_push_draw_rect(wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, c_aqua, resize.hovered || resize.held);
-	}
-	
-	wind.viewport_w = wind.w - gmkui_style.window_padding[0] * 2;
-	wind.viewport_h = wind.h - (gmkui_style.window_padding[1] * 2 + title_height_offset);
-	var overflow_height = wind.content_height - wind.viewport_h;
-	var scrollbar_thumb_height = max(wind.viewport_h - overflow_height, 16);
-	
-	// scrollbar
-	var right_padding = 0;
-	var content_start_y = wind.y + title_height_offset + gmkui_style.window_padding[1] + wind.scrollbar_y;
-
-	if (!wind.hidden)
+	if (wind.hidden)
 	{
-		// content
-		var content = gmkui_interact("#CONTENT", wind.x, wind.y + title_height_offset, wind.w, wind.h - title_height_offset, -1, gmkui_interact_flags.hover | gmkui_interact_flags.pressed | gmkui_interact_flags.wheel);
-		if (content && content.wheel != 0 && overflow_height > 0)
-		{
-			wind.offset_y += content.wheel * 16;
-			wind.offset_y = min(wind.offset_y, 0);
-			
-			// convert to scrollbar
-			var ratio = clamp(abs(wind.offset_y) / (wind.content_height - wind.viewport_h), 0, 1);
-			wind.scrollbar_y = ratio * (wind.viewport_h - scrollbar_thumb_height);
-		}
-
-		// scrollbar
-		if (wind.cursor_y > wind.y + wind.viewport_h + wind.offset_y)
-		{
-			right_padding = gmkui_style.window_padding[0] * 2;
-			wind.viewport_w -= gmkui_style.window_padding[0] * 2;
-			var scrollbar = gmkui_interact("#SCROLLBAR", wind.x + wind.w - right_padding - gmkui_style.window_padding[0] * 0.5, content_start_y, right_padding, scrollbar_thumb_height, GMKUI_INTERACT_MAX_DEPTH);
-	
-			if (scrollbar && scrollbar.held)
-			{
-				wind.scrollbar_y = (gmkui.my - gmkui.drag_offset_y) - (wind.y + title_height_offset/*+ gmkui_style.gap[1] * 2 */);
-				wind.scrollbar_y = clamp(wind.scrollbar_y, 0, wind.viewport_h - scrollbar_thumb_height);
-				var ratio = wind.scrollbar_y / (wind.viewport_h - scrollbar_thumb_height);
-
-				wind.offset_y = round(-ratio * overflow_height);
-				wind.offset_y = clamp(wind.offset_y, -overflow_height, 0);
-			}
-		}
-
-		// scrollbar bg
-		__gmkui_push_draw_rect(wind.x + wind.w - right_padding - gmkui_style.window_padding[0] * 0.5, wind.y + title_height_offset + gmkui_style.window_padding[1], right_padding, wind.viewport_h, c_dkgray);
-		// scrollbar thumb
-		__gmkui_push_draw_rect(wind.x + wind.w - right_padding - gmkui_style.window_padding[0] * 0.5, content_start_y, right_padding, scrollbar_thumb_height, gmkui_style.col.bg_title, 1, false);
-
-	} else {
-		wind.h = title_height_offset + 1;
+		gmkui_end();
+		return false;
 	}
+
+	var scrollbar_padding = gmkui_style.gap[0] * 2;
+	var scrollbar_w = gmkui_style.scrollbar_size + scrollbar_padding;
+
+	wind.viewport_w = wind.w - gmkui_style.window_padding[0] * 2;
+	wind.viewport_h = wind.h - gmkui_style.window_padding[1] - title_height_offset;
+
+	var overflow_height = (wind.content_height - wind.viewport_h);
+	
+	// content
+	var content = gmkui_interact("#CONTENT", wind.x, wind.y + title_height_offset, wind.w, wind.h - title_height_offset, -1, gmkui_interact_flags.hover | gmkui_interact_flags.pressed | gmkui_interact_flags.wheel);
+	if (content && content.wheel != 0 && overflow_height > 0)
+	wind.offset_y += content.wheel * 16;	
+	wind.offset_y = min(wind.offset_y, 0);
+	
+	// enable scrollbar when overflow
+	var thumb_h = max(wind.viewport_h - overflow_height, 8);
+	if (overflow_height)
+	{
+		wind.viewport_w -= scrollbar_w;
+		
+		var content_start_y = wind.y + title_height_offset;
+		
+		var thumb_x = wind.x + wind.w - scrollbar_w + scrollbar_padding * 0.5;
+		var thumb_y = content_start_y + wind.scrollbar_y;
+
+		var scrollbar = gmkui_interact("#SCROLLBAR", thumb_x, thumb_y, gmkui_style.scrollbar_size, thumb_h, GMKUI_INTERACT_MAX_DEPTH);
+		if (scrollbar && scrollbar.held)
+		{
+			wind.scrollbar_y = (gmkui.my - gmkui.drag_offset_y) - content_start_y;
+			wind.scrollbar_y = clamp(wind.scrollbar_y, 0, wind.viewport_h - thumb_h);
+			var ratio = wind.scrollbar_y / (wind.viewport_h - thumb_h);
+			
+			wind.offset_y = round(-ratio * overflow_height);
+			wind.offset_y = clamp(wind.offset_y, -overflow_height, 0);
+		}
+
+		// bg
+		__gmkui_push_draw_rect(wind.x + wind.w - scrollbar_w, content_start_y, scrollbar_w, wind.viewport_h, c_dkgray);
+		// thumb
+		__gmkui_push_draw_rect(thumb_x, thumb_y, gmkui_style.scrollbar_size, thumb_h, gmkui_style.col.bg_title, 1, false);
+	}
+
+	var ratio = clamp(abs(wind.offset_y) / abs(wind.content_height - wind.viewport_h), 0, 1);
+	wind.scrollbar_y = ratio * (wind.viewport_h - thumb_h);
 	
 	var extra_space = wind.viewport_h - wind.content_height - wind.offset_y;
 	if (extra_space > 0 && wind.offset_y < 0)
-	{
 		wind.offset_y += extra_space;
-	}
-	wind.scrollbar_y = clamp(wind.scrollbar_y, 0, wind.viewport_h - scrollbar_thumb_height);
 
-	__gmkui_pushclip(
-		wind.x + gmkui_style.window_padding[0],
-		wind.y + gmkui_style.window_padding[1] + title_height_offset,
-		wind.w - (gmkui_style.window_padding[0] * 2 + right_padding + 1),
-		wind.viewport_h
-	);
+	__gmkui_pushclip(wind.x + gmkui_style.window_padding[0], wind.y + title_height_offset, wind.viewport_w, wind.viewport_h);
 
 	// reset cursor
 	wind.cursor_start_x = wind.x + gmkui_style.window_padding[0];
-	wind.cursor_start_y = wind.y + title_height_offset + gmkui_style.window_padding[1] + wind.offset_y;
+	wind.cursor_start_y = wind.y + gmkui_style.window_padding[1] + title_height_offset + wind.offset_y;
 	wind.cursor_x = wind.cursor_start_x;
 	wind.cursor_y = wind.cursor_start_y;
-	
+
 	return true;	
 }
 
@@ -200,13 +193,18 @@ function gmkui_end()
 
 	gmkui_assert(ds_stack_size(wind.stack_id) <= 1, "gmkui_popid() missing somewhere!");
 
+	wind.content_height = wind.cursor_y - wind.cursor_start_y + wind.line_height + gmkui_style.window_padding[1];
 	wind.line_width = 0;
 	wind.line_height = 0;
-	wind.content_height = wind.cursor_y - (wind.y + wind.offset_y + gmkui_style.window_padding[1]);
 	wind.depth_count = -1;
 	wind.depth_hovered = -1;
 	
-	__gmkui_popclip();
+	if (!wind.hidden)
+		__gmkui_popclip();
+
+	// border
+	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.border, 1, true);
+	
 	ds_stack_pop(gmkui.windows_stack);
 }
 
@@ -287,6 +285,8 @@ function gmkui_text(text)
 	var y0 = wind.cursor_y;
 
 	__gmkui_push_draw_text(floor(x0), floor(y0), text, gmkui_style.col.text);
+	if (gmkui.debug_interact) { __gmkui_push_post_draw(gmkui_draw_call_flags.rect, { x: x0, y: y0, w: str_w, h: str_h, color: c_red, outline: true, alpha: 0.5 }); }
+
 }
 
 function gmkui_button(label, flags=0)
@@ -460,16 +460,19 @@ function gmkui_collapse(label, ref)
 	var width = wind.viewport_w;
 	var height = str_h + gmkui_style.button_padding[1] * 2;
 	
-	if (!__gmkui_newline(wind, width, height)) { return false; }
+	var is_visible = __gmkui_newline(wind, width, height);
 
 	var x0 = wind.cursor_x;
 	var y0 = wind.cursor_y;
 	
-	var it = gmkui_interact(label, x0, y0, width, height);
-	
-	if (it.pressed) { ref.set(!ref.get()); }
-	
-	__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.collapse, { x: x0, y: y0, w: width, h: height, open: ref.get(), text: label, hovered: it.hovered, active: (it.pressed || it.held) });
+	if (is_visible)
+	{
+		var it = gmkui_interact(label, x0, y0, width, height);
+		
+		if (it.pressed) { ref.set(!ref.get()); }
+		
+		__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.collapse, { x: x0, y: y0, w: width, h: height, open: ref.get(), text: label, hovered: it.hovered, active: (it.pressed || it.held) });
+	}
 
 	return ref.get();
 }
