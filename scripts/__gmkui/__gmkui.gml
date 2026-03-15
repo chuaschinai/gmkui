@@ -72,7 +72,7 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 
 	var title_height_offset = (flags & gmkui_window_flags.no_title) ? 0 : gmkui_style.title_height;
 	
-	if (gmkui.next_flags & gmkui_next_flag.auto_resize_y)
+	if (!wind.hidden && (gmkui.next_flags & gmkui_next_flag.auto_resize_y))
 	{
 		wind.h = wind.content_height + gmkui_style.window_padding[1] + title_height_offset;
 		gmkui.next_flags &= ~gmkui_next_flag.auto_resize_y;
