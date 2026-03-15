@@ -80,6 +80,8 @@ if (gmkui_begin(title, window_example_ref, 360, 32, 480, 640))
 	gmkui_end();
 }
 
+gmkui_next_window_auto_resize_y();
+gmkui_next_window_bg_alpha(0.75);
 var flags = window_fixed_flags.get();
 if (gmkui_begin("Fixed window", window_fixed_ref, 16, 16, 300, 0, flags))
 {

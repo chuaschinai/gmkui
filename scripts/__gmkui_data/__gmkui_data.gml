@@ -24,6 +24,10 @@ function __gmkui() constructor
 	self.previous_window_w = window_get_width();
 	self.previous_window_h = window_get_height();
 	self.debug_interact = false;
+
+	// next data
+	self.next_flags = 0;
+	self.next_window_bg_alpha = 1;
 }
 
 global.__ggmkui = new __gmkui(); #macro gmkui global.__ggmkui
@@ -175,6 +179,13 @@ enum gmkui_draw_call_flags
 // 	right,
 // 	middle
 // }
+
+enum gmkui_next_flag
+{
+	none = 0,
+	bg_alpha = 1,
+	auto_resize_y = 2,
+};
 
 enum gmkui_window_flags
 {

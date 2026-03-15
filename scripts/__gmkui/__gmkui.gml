@@ -9,7 +9,10 @@
 function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 {	
 	if (ref != undefined && ref.get() == false)
+	{
+		gmkui.next_flags = 0;
 		return false;
+	}
 
 	var _id;
 	if (gmkui.next_window_id)
@@ -67,16 +70,28 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 		}
 	}
 
+	var title_height_offset = (flags & gmkui_window_flags.no_title) ? 0 : gmkui_style.title_height;
+	
+	if (gmkui.next_flags & gmkui_next_flag.auto_resize_y)
+	{
+		wind.h = wind.content_height + gmkui_style.window_padding[1] + title_height_offset;
+		gmkui.next_flags &= ~gmkui_next_flag.auto_resize_y;
+	}
+
+	var bg_alpha = 1;
+	if (gmkui.next_flags & gmkui_next_flag.bg_alpha)
+	{	
+		bg_alpha = gmkui.next_window_bg_alpha;
+		gmkui.next_flags &= ~gmkui_next_flag.bg_alpha;
+	}
+
 	// background
-	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.background);
+	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.background, bg_alpha);
 	// resize
 	__gmkui_push_draw_rect(wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, c_aqua, resize.hovered || resize.held);
-
-	var title_height_offset = 0;
+	
 	if (!(flags & gmkui_window_flags.no_title)) {
 		__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.titlebar, { text: name, x: wind.x, y: wind.y, w: wind.w, h: gmkui_style.title_height, is_focused: gmkui.window_focus_id == wind.id });
-		
-		title_height_offset = gmkui_style.title_height;
 
 		var button_size = gmkui_style.title_height - gmkui_style.gap[1] * 2;
 		var button_x = wind.x + wind.w - button_size - gmkui_style.window_padding[0];
@@ -203,7 +218,7 @@ function gmkui_end()
 		__gmkui_popclip();
 
 	// border
-	__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.border, 1, true);
+	//__gmkui_push_draw_rect(wind.x, wind.y, wind.w, wind.h, gmkui_style.col.border, 1, true);
 	
 	ds_stack_pop(gmkui.windows_stack);
 }
@@ -584,6 +599,18 @@ function gmkui_popid()
 function gmkui_next_window_id(str)
 {
 	gmkui.next_window_id = __gmkui_hash(str, 0);
+}
+
+/// @param {Real} value
+function gmkui_next_window_bg_alpha(value)
+{
+	gmkui.next_flags |= gmkui_next_flag.bg_alpha;
+	gmkui.next_window_bg_alpha = value;
+}
+
+function gmkui_next_window_auto_resize_y()
+{
+	gmkui.next_flags |= gmkui_next_flag.auto_resize_y;
 }
 
 /// @desc Creates a reference for widgets
