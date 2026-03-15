@@ -60,7 +60,7 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 
 	// resize
 	var resize = gmkui_interact("#RESIZE", wind.x + wind.w - 4, wind.y + wind.h - 4, 8, 8, GMKUI_INTERACT_MAX_DEPTH, gmkui_interact_flags.All | gmkui_interact_flags.out_of_window);
-	if (resize) {
+	if (!wind.hidden && resize) {
 		if (resize.held)
 		{
 			wind.w = (gmkui.mx - gmkui.drag_offset_x) - wind.x + gmkui_style.window_padding[0];
@@ -72,9 +72,10 @@ function gmkui_begin(name, ref, x, y, width, height=0, flags=0)
 
 	var title_height_offset = (flags & gmkui_window_flags.no_title) ? 0 : gmkui_style.title_height;
 	
-	if (!wind.hidden && (gmkui.next_flags & gmkui_next_flag.auto_resize_y))
+	if (gmkui.next_flags & gmkui_next_flag.auto_resize_y)
 	{
-		wind.h = wind.content_height + gmkui_style.window_padding[1] + title_height_offset;
+		if (!wind.hidden)
+			wind.h = wind.content_height + gmkui_style.window_padding[1] + title_height_offset;
 		gmkui.next_flags &= ~gmkui_next_flag.auto_resize_y;
 	}
 
