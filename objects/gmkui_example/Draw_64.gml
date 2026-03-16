@@ -2,7 +2,8 @@ if (gmkui_window_resized())
 {
 	display_set_gui_size(window_get_width(), window_get_height());
 	camera_set_view_size(view_camera[0], window_get_width(), window_get_height());
-	surface_resize(application_surface, window_get_width(), window_get_height());
+	if (window_has_focus())
+		surface_resize(application_surface, window_get_width(), window_get_height());
 	exit;
 }
 
