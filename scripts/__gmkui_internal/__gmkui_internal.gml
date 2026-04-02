@@ -1,5 +1,3 @@
-/// GameMakerUI v1.0.0 - by chuas
-
 #macro GMKUI_INTERACT_MAX_DEPTH 65535
 
 /// @param {Bool} x
@@ -67,6 +65,8 @@ function __gmkui_newline(wind, width, height)
 	);
 }
 
+/// @param {Real} width
+/// @param {Real} [def_w] default 0, if width is 0
 function __gmkui_item_width(width, def_w=0)
 {
 	if (def_w == 0)

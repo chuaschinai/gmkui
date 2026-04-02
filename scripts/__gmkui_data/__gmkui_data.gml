@@ -1,5 +1,3 @@
-// GameMakerUI v1.0.0 - by chuas
-
 // global context
 function __gmkui() constructor
 {

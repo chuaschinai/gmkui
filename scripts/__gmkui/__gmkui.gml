@@ -1,4 +1,4 @@
-/// GameMakerUI v1.0.0 - by chuas
+/// GameMakerUI
 
 /// @param {String} name
 /// @param {Struct.__gmkui_ref} ref
