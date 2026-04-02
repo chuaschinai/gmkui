@@ -6,7 +6,6 @@ function __gmkui() constructor
 	self.windows = ds_map_create();
 	self.windows_stack = ds_stack_create();
 	self.windows_ordered = ds_list_create();
-	self.draw_calls = ds_queue_create();
 	self.post_draw_calls = ds_queue_create();
 	self.clip = ds_stack_create();
 	self.mx = 0;
