@@ -275,7 +275,7 @@ function gmkui_draw()
 	gmkui.hover_id = 0;
 }
 
-/// @param {String} text
+/// @param {Any} text
 /// @param {Any} [arg0]
 /// @param {Any} [arg1]
 /// @param {Any} [arg2]
@@ -285,22 +285,24 @@ function gmkui_text(text)
 {	
 	var wind = gmkui_current_window();
 
+	var new_text = string(text);
+
 	if (argument_count > 1)
 	{
 		var args = [];
 		for (var i = 1; i < argument_count; ++i) { array_push(args, string(argument[i])); }
-		text = string_ext(text, args);
+		new_text = string_ext(text, args);
 	}
 
-	var str_w = string_width(text);
-	var str_h = string_height(text);
+	var str_w = string_width(new_text);
+	var str_h = string_height(new_text);
 	
 	if (!__gmkui_newline(wind, str_w + gmkui_style.gap[0], str_h)) { return; }
 
 	var x0 = wind.cursor_x;
 	var y0 = wind.cursor_y;
 
-	__gmkui_push_draw_text(floor(x0), floor(y0), text, gmkui_style.col.text);
+	__gmkui_push_draw_text(floor(x0), floor(y0), new_text, gmkui_style.col.text);
 	if (gmkui.debug_interact) { __gmkui_push_post_draw(gmkui_draw_call_flags.rect, { x: x0, y: y0, w: str_w, h: str_h, color: c_red, outline: true, alpha: 0.5 }); }
 
 }
@@ -310,10 +312,10 @@ function gmkui_button(label, flags=0)
 	var wind = gmkui_current_window();
 	
 	var ids = __gmkui_extract_id(label);
-	label = ids[0];
+	var new_label = ids[0];
 	
-	var str_w = string_width(label);
-	var str_h = string_height(label);
+	var str_w = string_width(new_label);
+	var str_h = string_height(new_label);
 	
 	var width = clamp(str_w + gmkui_style.button_padding[0] * 2, 0, wind.w);
 	width = __gmkui_item_width(0, width);
@@ -424,7 +426,7 @@ function gmkui_slider(label, ref, value_min, value_max, flags=gmkui_slider_flags
 	var str_h = string_height(label);
 
 	var ids = __gmkui_extract_id(label);
-	label = ids[0];
+	var new_label = ids[0];
 
 	var track_width = __gmkui_item_width(0);
 	var track_height = str_h;
@@ -459,7 +461,7 @@ function gmkui_slider(label, ref, value_min, value_max, flags=gmkui_slider_flags
 	if (!is_int) { value = string_format(real(value), 0, 2); }
 	
 	__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.slider, { x: x0, y: y0, w: track_width, h: track_height, value: value, offset: offset, thumb_width: thumb_width, hover: thumb.hovered, active: thumb.held });
-	__gmkui_push_draw_text(x0 + track_width + gmkui_style.gap[0], y0, label);
+	__gmkui_push_draw_text(x0 + track_width + gmkui_style.gap[0], y0, new_label);
 
 	return (thumb.pressed || thumb.held);
 }
