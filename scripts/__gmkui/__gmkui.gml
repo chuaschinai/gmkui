@@ -496,12 +496,14 @@ function gmkui_collapse(label, ref)
 }
 
 /// @param {Asset.GMSprite} sprite
-/// @param {Real} [index] default 0
+/// @param {Real} index
 /// @param {Real} [width] default 64
 /// @param {Real} [height] default 64
-function gmkui_sprite(sprite, index=0, width=64, height=64)
+function gmkui_sprite(sprite, index, width=64, height=64, color=c_white)
 {
 	var wind = gmkui_current_window();
+
+	width = __gmkui_item_width(64, width);
 	
 	if (!__gmkui_newline(wind, width + gmkui_style.gap[0], height)) { return; }
 	
@@ -510,7 +512,7 @@ function gmkui_sprite(sprite, index=0, width=64, height=64)
 	
 	var info = sprite_get_info(sprite);
 	
-	__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.sprite, { sprite: sprite, index: index, x: x0, y: y0, w: width, h: height });
+	__gmkui_push_draw_cmd(wind, gmkui_draw_call_flags.sprite, { sprite: sprite, index: index, x: x0, y: y0, w: width, h: height, color: color });
 }
 
 function gmkui_separator(height=gmkui_style.gap[1])

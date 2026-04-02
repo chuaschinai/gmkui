@@ -56,7 +56,9 @@ if (gmkui_begin(title, window_example_ref, 360, 32, 480, 640))
 		gmkui_slider("Red", bg_red_ref, 0, 255, gmkui_slider_flags.integer);
 		gmkui_slider("Green", bg_green_ref, 0, 255, gmkui_slider_flags.integer);
 		gmkui_slider("Blue", bg_blue_ref, 0, 255, gmkui_slider_flags.integer);
-		layer_background_blend(layer_bg, make_colour_rgb(bg_red_ref.get(), bg_green_ref.get(), bg_blue_ref.get()));
+		var color = make_colour_rgb(bg_red_ref.get(), bg_green_ref.get(), bg_blue_ref.get());
+		gmkui_sprite(spr_bg, 0, 0, undefined, color);
+		layer_background_blend(layer_bg, color);
 	}
 
 	if (gmkui_collapse("Buttons", collapse_buttons_ref)) {
